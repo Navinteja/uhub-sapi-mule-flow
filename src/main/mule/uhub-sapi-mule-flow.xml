@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0f76fc44-9979-4b99-b80d-1484bb33ca93" basePath="register" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="327a8fc6-35c3-4238-905e-036059a9bd63" >
+		<db:oracle-connection host="localhost" user="system" password="naveen" instance="XE" />
+	</db:config>
+	<flow name="uhub-sapi-mule-flowFlow" doc:id="496ed1fb-63a1-4ec8-bd3a-c4530c0b7071" >
+		<http:listener doc:name="Listener" doc:id="338f33b7-24c5-4d8f-b10e-b6d6f650c752" config-ref="HTTP_Listener_config" path="v1/cases">
+			<http:response statusCode="#[vars.statusCode]" reasonPhrase="#[vars.statusReason]">
+			</http:response>
+			<http:error-response statusCode="#[vars.statusMode]">
+				<http:body><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<logger level="INFO" doc:name="Start Log " doc:id="b0f18c60-87b0-4e14-9919-e6874469bd18" message="The message flow has been started "/>
+		<ee:transform doc:name="Transform Message" doc:id="b8eb9ee0-5513-4421-9d8e-8e7c541f65a0" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="inputPayload" ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-variable>
+				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.headers.'transaction-id' default uuid()]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<!-- <json:validate-schema doc:name="Validate covid  JSON payload schema" doc:id="466a962d-6ad7-4762-bb39-d2ced0ce9a0c" schema="schemas/register-covid-case-schema.json"/> -->
+		<!-- [STUDIO:"covid-case-validation-sub-flow"]<flow-ref doc:name="covid-case-validation-sub-flow" doc:id="cbbed032-d8ac-46ea-96ac-6912310b805d" name="covid-case-validation-sub-flow" /> [STUDIO] -->
+		<ee:transform doc:name="Transform Message" doc:id="f50472b6-7670-42fa-9133-283c4de78548">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="covidPayload"><![CDATA[%dw 2.0
+output application/java
+var actionDate = now() as String { format:"yyyy-MM-dd"}
+var owner="UHIS"
+---
+{
+	source:payload.source,
+	case_type:payload.caseType,
+	firstName:payload.firstName,
+	lastName:payload.lastName,
+	phone:payload.phone,
+	email:payload.email,
+	dateOfBirth:payload.dateOfBirth,
+	nationalId:payload.nationalID,
+	nationalIDType:payload.nationalIDType,
+	address:payload.address,
+	streetAddress:payload.address.streetAddress,
+	city:payload.address.city,
+	state:payload.address.state,
+	postal:payload.address.postal,
+	country:payload.address.country,
+	create_date:actionDate,
+	update_date:actionDate,
+	create_by:owner,
+	update_by:owner
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="e99f909b-7f5c-477a-958c-6052972ccb20" message="#[vars.inputPayload]" />
+		<json:validate-schema doc:name="register -covid-case-validate -schema" doc:id="99dff8c8-e04b-4a9f-885c-23263c5dc661" schema="schemas/register-covid-case-schema.json" />
+		<db:stored-procedure doc:name="Stored procedure" doc:id="ef93fda5-67e4-45dc-839a-ddc06f154139" config-ref="Database_Config">
+			<db:sql><![CDATA[{ call insert_covid_master(:source,:case_type,:firstName,:lastName,:phone,:email,:dateOfBirth,:nationalId,:nationalIDType,:streetAddress,:city,:state,:postal,:country,:create_date,:update_date,:create_by,:update_by,:case_id)}]]></db:sql>
+			<db:input-parameters><![CDATA[#[vars.covidPayload]]]></db:input-parameters>
+			<db:output-parameters>
+				<db:output-parameter key="case_id" type="INTEGER" />
+			</db:output-parameters>
+		</db:stored-procedure>
+		<ee:transform doc:name="Transform Message" doc:id="7ec11c1f-16f5-4453-8bad-6c7c43386dd4">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+
+case_id:payload.case_id 
+
+]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="statusCode"><![CDATA[201]]></ee:set-variable>
+				<ee:set-variable variableName="statusReason"><![CDATA["OK"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="7966189e-2424-46fe-9822-a922546b1cba" message="#[payload]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c62346af-ffa5-49d3-a09a-a027cb551779" type="JSON:SCHEMA_NOT_HONOURED">
+				<ee:transform doc:name="Transform Message" doc:id="a92fd552-b240-4523-8d69-bd04f6ee12c0">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+   "code":400,
+   "message":"Bad Request",
+   "description": error.errorMessage.payload.message[0],
+   "dateTime": now() as String {format : "yyyy-MM-dd'T'HH:mm:ss'Z'"},
+   "transactionId": vars.transactionId
+}
+
+]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<!-- <db:config name="Database_Config1" doc:name="Database Config" doc:id="ef93fda5-67e4-45dc-839a-ddc06f154139" queryTimeout="0" input-parameters="#[vars.covidPayload]" autoGenerateKeys="false" sql="{ call insert_covid_master(:source,:case_type,:firstName,:lastName,:phone,:email,:dateOfBirth,:nationalId,:nationalIDType,:streetAddress,:city,:state,:postal,:country,:create_date,:update_date,:create_by,:update_by,:case_id)}" transactionalAction="JOIN_IF_POSSIBLE" config-ref="Database_Config1" targetValue="#[payload]" queryTimeoutUnit="SECONDS">
+		<db:oracle-connection host="localhost" user="system" password="naveen" instance="XE" />
+	</db:config>  -->
+</mule>

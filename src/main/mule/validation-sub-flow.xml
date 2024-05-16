@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<sub-flow name="covid-case-validation-sub-flow" doc:id="f2514b0e-ae14-4baf-8239-772e23365f16" >
+		<validation:all doc:name="All" doc:id="9e52d900-f527-4c63-8206-3fc4592c7cb8">
+			<validation:is-not-null doc:name="Is not null" doc:id="1110c838-2160-4971-ade7-12b6b3553a9b" value="#[vars.inputPayload.source]" message='#["Invaild source name "]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="fac9e447-07f1-44a5-b56e-4fe1577dc3cb" value="#[vars.inputPayload.caseType]" message='#["Invaild case type"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="8abe2ef1-a01b-407f-9730-e851af5af711" value="#[vars.inputPayload.firstName]" message='#[" Invaild First Name "]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="0faa67d0-7604-4797-adca-020dbb5a8bd7" value="#[vars.inputPayload.lastName]" message='#["Invaild Last name "]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="cd242f2c-828e-46d4-a2da-a5ab36600fc3" value="#[vars.inputPayload.phone]" message='#["Invaild phone "]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="4ea20325-9e29-4604-81db-870be1462134" value="#[vars.inputPayload.dateOfBirth]" message='#["Invaild date of birth "]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="776da1af-d061-45e4-b991-3fd399e2e1aa" value="#[vars.inputPayload.nationalID]" message='#[" Invaild NationalId"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="07bed1dc-d404-43d0-a9fa-eea35dcd2893" value="#[vars.inputPayload.nationalIDType]" message='#["Invaild NationalIDType "]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="a254efa1-118f-438a-a961-5e53fe71d2eb" value="#[vars.inputPayload.address.streetAddress]" message='#["Invaild address"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="3945b1b2-92db-4326-a70d-fd1d7d97a1d9" value="#[vars.inputPayload.address.city]" message='#["Invaild City"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="b42d26b2-47a4-42e4-a266-bb91fcf86101" value="#[vars.inputPayload.address.state]" message='#["Invaild state "]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="8141fc5a-158e-4af7-92d4-0b0f5f5ee517" value="#[vars.inputPayload.address.postal]" message='#["invaild Postal"]' />
+			<validation:is-not-null doc:name="Is not null" doc:id="43c556c8-2043-4515-bfa9-5de8ae834428" value="#[vars.inputPayload.address.country]" message='#["Invaild country"]' />
+		</validation:all>
+	</sub-flow>
+</mule>

@@ -1,0 +1,21 @@
+{
+  "covidCase": {
+    "caseID": "3",
+    "source": "Hospital1",
+    "caseType": "positive",
+    "firstName": "Naveen",
+    "lastName": "Pravallika",
+    "phone": "541-754-3010",
+    "email": "jnaveen@gmail.com",
+    "dateOfBirth": "1998-06-22",
+    "nationalID": "209-49-6193",
+    "nationalIDType": "SSN",
+    "address": {
+      "streetAddress": "1600 Pennsylvania Avenue NW",
+      "city": "Honton",
+      "state": "DC",
+      "postal": "20500",
+      "country": "USA"
+    }
+  }
+}
