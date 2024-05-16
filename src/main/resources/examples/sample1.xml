@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<covidCase>
+    <caseID>3</caseID>
+    <source>Hospital1</source>
+    <caseType>positive</caseType>
+    <firstName>Naveen</firstName>
+    <lastName>Pravallika</lastName>
+    <phone>541-754-3010</phone>
+    <email>jnaveen@gmail.com</email>
+    <dateOfBirth>1998-06-22</dateOfBirth>
+    <nationalID>209-49-6193</nationalID>
+    <nationalIDType>SSN</nationalIDType>
+    <address>
+        <streetAddress>1600 Pennsylvania Avenue NW</streetAddress>
+        <city>Honton</city>
+        <state>DC</state>
+        <postal>20500</postal>
+        <country>USA</country>
+    </address>
+</covidCase>
