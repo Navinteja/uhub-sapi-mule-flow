@@ -23,7 +23,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 output application/java
 ---
 attributes.headers.'x-correlation-id' default " "]]></ee:set-variable>
-				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
+				<ee:set-variable variableName="transactionIdName" ><![CDATA[%dw 2.0
 output application/java
 ---
 attributes.headers.'x-transaction-id' default uuid()]]></ee:set-variable>
