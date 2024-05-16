@@ -23,13 +23,13 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 output application/java
 ---
 attributes.headers.'x-correlation-id' default " "]]></ee:set-variable>
-				<ee:set-variable variableName="transactionIdName" ><![CDATA[%dw 2.0
+				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
 output application/java
 ---
 attributes.headers.'x-transaction-id' default uuid()]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="f20e66d8-f68d-404b-865f-cf9bbb30fe0a" message='correlationId:#[vars.correlationId] , transactionId:#[vars.transactionId], message:"The flow has been started " ,payload:#[payload]'/>
+		<logger level="INFO" doc:name="start logger" doc:id="f20e66d8-f68d-404b-865f-cf9bbb30fe0a" message='correlationId:#[vars.correlationId] , transactionId:#[vars.transactionId], message:"The flow has been started " ,payload:#[payload]'/>
 		<set-variable value="#[attributes.uriParams.nationalID]" doc:name="Set Variable" doc:id="9829cd9f-36ac-45a1-be11-f422f124481b" variableName="nationalID"/>
 		<db:select doc:name="Select" doc:id="982c02bd-592b-4a2e-8ffc-ab813bc1456d" config-ref="Database_Config">
 			<db:sql ><![CDATA[select case_id ,case_type,first_name,last_name,phone,email,date_of_birth,national_id,national_id_type,street_address,city,state,postal,country,create_date,update_date,create_by,update_by from cvd_case_master where national_id=:national_id]]></db:sql>
