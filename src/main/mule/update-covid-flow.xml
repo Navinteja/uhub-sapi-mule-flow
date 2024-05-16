@@ -25,7 +25,7 @@ output application/java
 attributes.headers.'x-transaction-id' default uuid()]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="0377bd46-360f-46d8-8af9-a20faa1a8800" message='correlationId:#[vars.correlationId] , transactionId:#[vars.transactionId], message:"The flow has been started " ,payload:#[payload]'/>
+		<logger level="INFO" doc:name="Start logger" doc:id="0377bd46-360f-46d8-8af9-a20faa1a8800" message='correlationId:#[vars.correlationId] , transactionId:#[vars.transactionId], message:"The flow has been started " ,payload:#[payload]'/>
 		<set-variable value='#[payload.dateOfBirth as String {format:"yyyy-MM-dd"}]' doc:name="Set Variable" doc:id="6bf6f603-32ff-4354-8695-8f1ab8a3bc5d" variableName="dob"/>
 		<ee:transform doc:name="Transform Message" doc:id="90b72752-9b07-46b1-9444-815974af38a7" >
 			<ee:message >
